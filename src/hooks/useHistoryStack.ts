@@ -2,19 +2,13 @@ import * as React from 'react';
 import { cloneDeep } from 'lodash';
 import { TreeItem } from '../types';
 
-type Snapshot<L,R> = { left: TreeItem<L>[]; right: TreeItem<R>[]; };
+type Snapshot<T> = TreeItem<T>[];
 
-export function useHistoryStack<L,R>() {
-  const undoStack = React.useRef<{ 
-    left: TreeItem<L>[]; 
-    right: TreeItem<R>[]; 
-  }[]>([]);
-  const redoStack = React.useRef<{ 
-    left: TreeItem<L>[]; 
-    right: TreeItem<R>[]; 
-  }[]>([]);
+export function useHistoryStack<T>() {
+  const undoStack = React.useRef<Snapshot<T>[]>([]);
+  const redoStack = React.useRef<Snapshot<T>[]>([]);
 
-  const undo = (snapshot: Snapshot<L,R>) => {
+  const undo = (snapshot: Snapshot<T>) => {
     if (!undoStack.current.length) {
       return;
     }
@@ -22,7 +16,7 @@ export function useHistoryStack<L,R>() {
     return undoStack.current.pop();
   };
 
-  const redo = (snapshot: Snapshot<L,R>) => {
+  const redo = (snapshot: Snapshot<T>) => {
     if (!redoStack.current.length) {
       return;
     }
@@ -30,7 +24,7 @@ export function useHistoryStack<L,R>() {
     return redoStack.current.pop();
   };
 
-  const push = (snapshot: Snapshot<L,R>) => {
+  const push = (snapshot: Snapshot<T>) => {
     undoStack.current.push(cloneDeep(snapshot));
     redoStack.current = [];
   };
